@@ -40,27 +40,33 @@
    ```bash
    chmod +x FileIntegrityChecker_linux
 3. Запустите:
+   ```bash
       ./FileIntegrityChecker_linux
 Также можно настроить запуск двойным кликом через свойства файла (вкладка «Права» → «Разрешить выполнение»).
 
 ### macOS
 1. Откройте терминал в папке с файлом.
 2. Дайте права на выполнение и снимите атрибут карантина:
+   ```bash
    chmod +x FileIntegrityChecker_macos
    xattr -d com.apple.quarantine FileIntegrityChecker_macos
-3. Запустите:
+4. Запустите:
+   ```bash
       ./FileIntegrityChecker_macos
 Если macOS блокирует запуск, зайдите в Системные настройки → Защита и безопасность → Общие и внизу нажмите «Всё равно выполнить». После этого двойной клик тоже будет работать.
 
 # Запуск из исходного кода (для разработчиков)
-    # Клонировать репозиторий
+1. Клонировать репозиторий
+   ```bash
    git clone https://github.com/Gnoly4/file-integrity-checker.git
    cd file-integrity-checker
 
-    # Запустить скрипт (требуется Python 3.6+)
+2. Запустить скрипт (требуется Python 3.6+)
+   ```bash
    python integrity_gui.py
 
 ## Сборка исполняемых файлов
 Исполняемые файлы собираются автоматически через GitHub Actions при создании тега. Для локальной сборки используйте PyInstaller:
+```bash
     pip install pyinstaller
     pyinstaller integrity_gui.spec
