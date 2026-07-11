@@ -47,6 +47,7 @@ jobs:
         else
           mv dist/integrity_gui dist/${{ matrix.output_name }}
         fi
+      shell: bash
 
     - name: Upload artifacts (for debugging)
       uses: actions/upload-artifact@v4
