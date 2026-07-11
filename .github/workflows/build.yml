@@ -6,8 +6,8 @@ on:
       - 'v*'
 
 permissions:
-  contents: write      # позволяет создавать релизы и загружать файлы
-  packages: write      # иногда нужно для некоторых пакетов
+  contents: write
+  packages: write
 
 jobs:
   build:
@@ -36,20 +36,28 @@ jobs:
         python -m pip install --upgrade pip
         pip install pyinstaller pillow
 
-    - name: Build with PyInstaller using spec file
+    - name: Build with PyInstaller
       run: |
         pyinstaller integrity_gui.spec
+
+    - name: Rename executable for release
+      run: |
+        if [ "${{ matrix.os }}" == "windows-latest" ]; then
+          mv dist/integrity_gui.exe dist/${{ matrix.output_name }}
+        else
+          mv dist/integrity_gui dist/${{ matrix.output_name }}
+        fi
 
     - name: Upload artifacts (for debugging)
       uses: actions/upload-artifact@v4
       with:
         name: ${{ matrix.os }}-executable
-        path: dist/integrity_gui${{ matrix.os == 'windows-latest' && '.exe' || '' }}
+        path: dist/${{ matrix.output_name }}
 
     - name: Upload to Release
       uses: softprops/action-gh-release@v2
       with:
-        files: dist/integrity_gui${{ matrix.os == 'windows-latest' && '.exe' || '' }}
+        files: dist/${{ matrix.output_name }}
         generate_release_notes: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
