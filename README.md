@@ -40,7 +40,7 @@
    ```bash
    chmod +x FileIntegrityChecker_linux
 3. Запустите:
-   ./FileIntegrityChecker_linux
+      ./FileIntegrityChecker_linux
 Также можно настроить запуск двойным кликом через свойства файла (вкладка «Права» → «Разрешить выполнение»).
 
 ### macOS
@@ -49,7 +49,7 @@
    chmod +x FileIntegrityChecker_macos
    xattr -d com.apple.quarantine FileIntegrityChecker_macos
 3. Запустите:
-   ./FileIntegrityChecker_macos
+      ./FileIntegrityChecker_macos
 Если macOS блокирует запуск, зайдите в Системные настройки → Защита и безопасность → Общие и внизу нажмите «Всё равно выполнить». После этого двойной клик тоже будет работать.
 
 # Запуск из исходного кода (для разработчиков)
