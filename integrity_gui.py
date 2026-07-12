@@ -7,11 +7,11 @@ from tkinter import ttk, filedialog, scrolledtext, messagebox
 from datetime import datetime
 import sys
 
-#Константы
+# Константы
 BLOCK_SIZE = 65536
 DEFAULT_ALGORITHMS = ['crc32', 'md5', 'sha256']
 
-#ОСНОВНАЯ ЛОГИКА
+# ОСНОВНАЯ ЛОГИКА
 def compute_hash(filepath, algorithms):
     hashes = {}
     if 'md5' in algorithms:
@@ -94,7 +94,7 @@ def verify_integrity(directory, manifest, algorithms):
             changes['new'].append(rel_path)
     return changes
 
-#ГРАФИЧЕСКИЙ ИНТЕРФЕЙС
+# ГРАФИЧЕСКИЙ ИНТЕРФЕЙС
 class IntegrityCheckerApp:
     def __init__(self, root):
         self.root = root
@@ -108,20 +108,20 @@ class IntegrityCheckerApp:
         except:
             pass
 
-        #Стиль
+        # Стиль
         style = ttk.Style()
         style.theme_use('clam')
         style.configure('TButton', font=('Segoe UI', 10))
         style.configure('TLabel', font=('Segoe UI', 10))
         style.configure('Header.TLabel', font=('Segoe UI', 14, 'bold'))
 
-        #Верхняя панель
+        # Верхняя панель
         header_frame = ttk.Frame(root)
         header_frame.pack(fill=tk.X, padx=15, pady=(15, 5))
 
         ttk.Label(header_frame, text="Контроль целостности файлов", style='Header.TLabel').pack(side=tk.LEFT)
 
-        #Выбор папки
+        # Выбор папки
         dir_frame = ttk.LabelFrame(root, text="Выбор директории", padding=10)
         dir_frame.pack(fill=tk.X, padx=15, pady=10)
 
@@ -129,7 +129,7 @@ class IntegrityCheckerApp:
         ttk.Entry(dir_frame, textvariable=self.dir_path, font=('Segoe UI', 10)).pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 10))
         ttk.Button(dir_frame, text="Обзор...", command=self.select_directory, width=12).pack(side=tk.RIGHT)
 
-        #Кнопки действий
+        # Кнопки действий
         btn_frame = ttk.Frame(root)
         btn_frame.pack(fill=tk.X, padx=15, pady=5)
 
@@ -137,7 +137,7 @@ class IntegrityCheckerApp:
         ttk.Button(btn_frame, text="🔍 Проверить целостность", command=self.verify_manifest).pack(side=tk.LEFT, padx=(0, 10))
         ttk.Button(btn_frame, text="🗑️ Очистить лог", command=self.clear_log).pack(side=tk.RIGHT)
 
-        #Лог-вывод
+        # Лог-вывод
         log_frame = ttk.LabelFrame(root, text="Результаты", padding=10)
         log_frame.pack(fill=tk.BOTH, expand=True, padx=15, pady=10)
 
@@ -174,7 +174,6 @@ class IntegrityCheckerApp:
         }
         self.log_text.insert(tk.END, message + "\n", (level,))
         self.log_text.see(tk.END)
-        # Настройка тегов для цвета
         for tag, color in colors.items():
             self.log_text.tag_config(tag, foreground=color)
 
@@ -196,7 +195,6 @@ class IntegrityCheckerApp:
             algorithms = DEFAULT_ALGORITHMS
             manifest_data = scan_directory(directory, algorithms)
 
-            # Сохраняем манифест в отдельную папку manifests/
             base_dir = os.path.dirname(os.path.abspath(__file__))
             manifest_dir = os.path.join(base_dir, 'manifests')
             os.makedirs(manifest_dir, exist_ok=True)
@@ -216,21 +214,25 @@ class IntegrityCheckerApp:
             messagebox.showerror("Ошибка", "Сначала выберите папку!")
             return
 
-        #Манифест в папке manifests/
         base_dir = os.path.dirname(os.path.abspath(__file__))
         manifest_dir = os.path.join(base_dir, 'manifests')
         if not os.path.isdir(manifest_dir):
             messagebox.showerror("Ошибка", "Папка с манифестами не найдена. Сначала создайте манифест.")
             return
 
-        #Cписок доступных манифестов
-        manifests = [f for f in os.listdir(manifest_dir) if f.endswith('.json')]
-        if not manifests:
-            messagebox.showerror("Ошибка", "Нет сохранённых манифестов. Сначала создайте манифест.")
+        folder_name = os.path.basename(directory)
+        all_manifests = [f for f in os.listdir(manifest_dir) if f.endswith('.json')]
+        matching_manifests = [f for f in all_manifests if folder_name in f]
+
+        if not matching_manifests:
+            messagebox.showerror(
+                "Ошибка",
+                f"Нет манифеста для папки '{folder_name}'.\nСначала создайте манифест для этой директории."
+            )
             return
 
-        # Простейший выбор: берём последний (самый свежий)
-        manifest_path = os.path.join(manifest_dir, manifests[-1])
+        matching_manifests.sort(reverse=True)
+        manifest_path = os.path.join(manifest_dir, matching_manifests[0])
 
         self.status_var.set("Проверка целостности...")
         self.log("--- ПРОВЕРКА ЦЕЛОСТНОСТИ ---", 'info')
